@@ -22,6 +22,10 @@ This single task contains the approved architecture and visual decisions plus th
 | `6e02cf3` | Submission-ready English materials and verification gate |
 | `485fd8d` | Standalone public-repository ignore boundary |
 | `358576c` | Railway Docker and health-check configuration |
+| `b87f60b` | Server-side provider exception audit without client credential exposure |
+| `ac398e1` | Responses API `text.verbosity` compatibility fix |
+| `a81d794` | Strict-schema patch-size compatibility fix with runtime validation preserved |
+| `40d8120` | Flat strict action envelope accepted by the Responses schema contract |
 
 ## Verification performed by Codex
 
@@ -40,7 +44,7 @@ This single task contains the approved architecture and visual decisions plus th
 - API: <https://memory-court-api-production.up.railway.app>
 - Railway project: `136c52ec-3f62-4cc3-8b97-0354b205da28`
 - Railway service: `cf859640-8eae-4c81-8ab8-1cb4dda96575`
-- Successful Railway CORS deployment: `39735c74-5b69-4add-85c1-3dd6cbdaf33a`
+- Successful Railway live-request deployment: `1e473ebe-f1bd-42d8-b7a7-c3aefce42856`
 - Ready Vercel production deployment: `dpl_7pLdyf7PYDYxP8zXFkAmrjCGuCnd`
 
 ## Claim boundary

@@ -1,12 +1,12 @@
 # Memory Court submission verification report
 
-- Audit time: 2026-07-18 14:45 Asia/Shanghai
-- Status: **PUBLIC REPLAY READY; LIVE GPT-5.6 NOT YET VERIFIED**
+- Audit time: 2026-07-18 15:27 Asia/Shanghai
+- Status: **PUBLIC REPLAY READY; LIVE GPT-5.6 BLOCKED BY API QUOTA**
 - Primary Codex task: `019f725e-6f43-78c2-8587-4ad6a3725d9f`
-- Source branch commit: `358576cbbe916058193f66c2872aa39ec0d269c2`
+- Source branch code commit: `40d8120f4020db67cb876aa89f7d7ce695c4c8f8`
 - Published subtree commit: `7fed520c7f84d89df0f4d1cd9bf4b729f5c142dc`
 
-This report deliberately remains incomplete on one required gate: Railway does not yet contain an `OPENAI_API_KEY`, so no replay event is presented as live-model proof.
+This report deliberately remains incomplete on one required gate. Railway has a server-side `OPENAI_API_KEY`, the production request now passes the Responses parameter and strict-schema checks, but OpenAI returns `429 insufficient_quota`. No replay event is presented as live-model proof.
 
 ## Public artifacts
 
@@ -24,7 +24,7 @@ Command: `bash scripts/verify.sh`
 |---|---|
 | Required submission files | PASS |
 | Unfilled-marker scan | PASS |
-| Backend contracts and Guard adapter | PASS — 34 tests |
+| Backend contracts and Guard adapter | PASS — 35 tests |
 | Frontend interaction tests | PASS — 4 tests |
 | TypeScript | PASS |
 | Vite production build | PASS |
@@ -37,37 +37,36 @@ Command: `bash scripts/verify.sh`
 - Production viewport: 1440×900.
 - Page title: `Memory Court — GPT-5.6 Audit`.
 - Default case: `silent_lifeboat`.
-- Public mode before key configuration: exactly one `REPLAY MODE` badge.
+- Public replay mode: exactly one `REPLAY MODE` badge.
 - Replay events: 5.
-- Live control: disabled while `live_available=false`.
+- Live readiness is now advertised because a server-side key is configured; a provider failure still enters labeled replay.
 - Browser console: zero warnings and zero errors.
 - Interaction: switching from Silent Lifeboat to Last Birthday and restarting replay changed the rendered trace from 5 to 4 events.
 
 ## Railway container and API verification
 
-Railway used `/railway.json` with `builder=DOCKERFILE`, `dockerfilePath=backend/Dockerfile`, and `/api/health` as the health path. Deployment `39735c74-5b69-4add-85c1-3dd6cbdaf33a` completed with status `SUCCESS`.
+Railway used `/railway.json` with `builder=DOCKERFILE`, `dockerfilePath=backend/Dockerfile`, and `/api/health` as the health path. Latest deployment `1e473ebe-f1bd-42d8-b7a7-c3aefce42856` completed with status `SUCCESS`.
 
 | Public check | Result |
 |---|---|
-| `GET /api/health` | 200; model `gpt-5.6`; replay available; live unavailable |
+| `GET /api/health` | 200; model `gpt-5.6`; replay and live readiness available |
 | `GET /api/cases` | 200; one pre-existing and one competition-period case |
 | `GET /api/replays/silent_lifeboat` | 200; top-level and all events use replay mode |
 | Vercel-origin CORS preflight | 200; exact production origin returned |
-| `POST /api/sessions` without key | 503; no fake live session created |
-| Recent Railway runtime logs | clean startup and expected 200/404 smoke traffic; no application exception |
+| `POST /api/sessions` with server key | 201; creates `mode=live`, model `gpt-5.6` |
+| `POST /api/sessions/{id}/run` | 200; safely terminates as `live_model_unavailable`, allowing labeled replay fallback |
+| Recent Railway runtime logs | full server-side exception chain; final provider cause is `429 insufficient_quota`; no credential material |
 
 ## Live GPT-5.6 gate
 
-Current evidence contradicts completion of the live gate: the Railway variable-name audit contains `OPENAI_MODEL` but not `OPENAI_API_KEY`; `/api/health` returns `live_available=false`.
+Current evidence contradicts completion of the live gate: production session `9MLXheuOzU30n1Sz-b1XydwP` reached OpenAI after all request/schema fixes, then the provider returned `429 insufficient_quota`. It produced no model action and no Guard ruling.
 
-Required evidence after the entrant adds the server-side key:
+Required evidence after the entrant enables billing or quota for the OpenAI project behind the deployed key:
 
-1. Railway redeployment status `SUCCESS`.
-2. `/api/health` returns `live_available=true` and `model=gpt-5.6`.
-3. A new public session runs to terminal.
-4. At least one returned event has `mode=live`, `model=gpt-5.6`, `model_action=propose_intervention`, and a non-null Guard outcome.
-5. The response and logs contain no credential material.
-6. Production frontend displays `LIVE · GPT-5.6` and the same executed trace.
+1. A new public session runs to terminal without `live_model_unavailable`.
+2. At least one returned event has `mode=live`, `model=gpt-5.6`, `model_action=propose_intervention`, and a non-null Guard outcome.
+3. The response and logs contain no credential material.
+4. Production frontend displays `LIVE · GPT-5.6` and the same executed trace.
 
 ## Known demo-grade limits
 
