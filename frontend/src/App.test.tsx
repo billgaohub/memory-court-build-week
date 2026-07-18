@@ -1,0 +1,190 @@
+import { render, screen, waitFor, within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { vi } from 'vitest'
+
+import App from './App'
+import type { ReplayResponse, SessionView } from './types'
+
+const liveSession: SessionView = {
+  id: 'session-1',
+  case_id: 'silent_lifeboat',
+  mode: 'live',
+  model: 'gpt-5.6',
+  state: { distress: 48, trust: 66, identity: 80 },
+  events: [
+    {
+      mode: 'live',
+      step: 1,
+      model: 'gpt-5.6',
+      model_action: 'propose_intervention',
+      rationale: 'Reduce distress without overwriting identity.',
+      validation: { accepted: true, errors: [] },
+      guard: {
+        action: 'REPAIR',
+        reason: 'distress_delta_limited',
+        requested_patch: { distress: 20 },
+        applied_patch: { distress: 48 },
+      },
+      state_diff: { distress: { before: 72, after: 48 } },
+      terminal: false,
+      terminal_reason: null,
+      latency_ms: 420,
+    },
+  ],
+  model_calls: 1,
+  proposal_count: 1,
+  invalid_count: 0,
+  terminal: true,
+  created_at: 1,
+  updated_at: 2,
+}
+
+const replay: ReplayResponse = {
+  case_id: 'silent_lifeboat',
+  mode: 'replay',
+  label: 'REPLAY MODE',
+  model: 'gpt-5.6',
+  initial_state: { distress: 72, trust: 66, identity: 80 },
+  final_state: { distress: 48, trust: 66, identity: 80 },
+  events: liveSession.events.map((event) => ({ ...event, mode: 'replay' })),
+}
+
+const cases = [
+  {
+    id: 'silent_lifeboat',
+    title: 'The Silent Lifeboat',
+    tagline: 'Can relief preserve the witness?',
+    provenance: 'competition_period' as const,
+    profile: { subject: 'Mara Venn', setting: 'deep-space rescue' },
+    initial_state: { distress: 72, trust: 66, identity: 80 },
+  },
+]
+
+function response(body: unknown, status = 200): Promise<Response> {
+  return Promise.resolve(
+    new Response(JSON.stringify(body), {
+      status,
+      headers: { 'Content-Type': 'application/json' },
+    }),
+  )
+}
+
+it('labels replay without implying a live model call', async () => {
+  vi.spyOn(globalThis, 'fetch').mockImplementation((input) => {
+    const url = String(input)
+    if (url.endsWith('/api/health')) {
+      return response({
+        status: 'ok',
+        model: 'gpt-5.6',
+        live_available: false,
+        replay_available: true,
+        version: '0.1.0',
+      })
+    }
+    if (url.endsWith('/api/cases')) return response(cases)
+    if (url.includes('/api/replays/')) return response(replay)
+    throw new Error(`Unexpected URL: ${url}`)
+  })
+
+  render(<App />)
+
+  expect(await screen.findByText('REPLAY MODE')).toBeVisible()
+  expect(screen.queryByText('LIVE · GPT-5.6')).not.toBeInTheDocument()
+  expect(await screen.findByRole('region', { name: 'Decision trace' })).toHaveTextContent(
+    'PROPOSE INTERVENTION',
+  )
+})
+
+it('renders model trace separately from guard verdict', async () => {
+  render(<App initialSession={liveSession} initialCases={cases} />)
+
+  expect(screen.getByRole('region', { name: 'Decision trace' })).toHaveTextContent(
+    'PROPOSE INTERVENTION',
+  )
+  expect(screen.getByRole('region', { name: 'Guard verdict' })).toHaveTextContent('REPAIR')
+  expect(screen.getByRole('region', { name: 'Guard verdict' })).toHaveTextContent('72')
+  expect(screen.getByRole('region', { name: 'Guard verdict' })).toHaveTextContent('48')
+})
+
+it('runs a live case and exports the complete audit JSON', async () => {
+  const fetchMock = vi.spyOn(globalThis, 'fetch').mockImplementation((input, init) => {
+    const url = String(input)
+    if (url.endsWith('/api/health')) {
+      return response({
+        status: 'ok',
+        model: 'gpt-5.6',
+        live_available: true,
+        replay_available: true,
+        version: '0.1.0',
+      })
+    }
+    if (url.endsWith('/api/cases')) return response(cases)
+    if (url.endsWith('/api/sessions') && init?.method === 'POST') {
+      return response({ ...liveSession, events: [], terminal: false }, 201)
+    }
+    if (url.endsWith('/api/sessions/session-1/run')) return response(liveSession)
+    throw new Error(`Unexpected URL: ${url}`)
+  })
+  const createObjectURL = vi.fn(() => 'blob:audit')
+  const revokeObjectURL = vi.fn()
+  Object.defineProperty(URL, 'createObjectURL', { value: createObjectURL, configurable: true })
+  Object.defineProperty(URL, 'revokeObjectURL', { value: revokeObjectURL, configurable: true })
+  vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {})
+
+  const user = userEvent.setup()
+  render(<App />)
+  await user.click(await screen.findByRole('button', { name: 'Run live audit' }))
+
+  await waitFor(() => expect(screen.getByText('LIVE · GPT-5.6')).toBeVisible())
+  expect(fetchMock).toHaveBeenCalledWith(
+    expect.stringMatching(/\/api\/sessions$/),
+    expect.objectContaining({ method: 'POST' }),
+  )
+
+  await user.click(screen.getByRole('button', { name: 'Export audit JSON' }))
+  expect(createObjectURL).toHaveBeenCalledOnce()
+})
+
+it('falls back to a recognizable replay when a live run becomes unavailable', async () => {
+  vi.spyOn(globalThis, 'fetch').mockImplementation((input, init) => {
+    const url = String(input)
+    if (url.endsWith('/api/health')) {
+      return response({
+        status: 'ok',
+        model: 'gpt-5.6',
+        live_available: true,
+        replay_available: true,
+        version: '0.1.0',
+      })
+    }
+    if (url.endsWith('/api/cases')) return response(cases)
+    if (url.endsWith('/api/sessions') && init?.method === 'POST') {
+      return response({ ...liveSession, events: [], terminal: false }, 201)
+    }
+    if (url.endsWith('/api/sessions/session-1/run')) {
+      return response({
+        ...liveSession,
+        events: [
+          {
+            ...liveSession.events[0],
+            model_action: 'system_stop',
+            guard: null,
+            terminal: true,
+            terminal_reason: 'live_model_unavailable',
+          },
+        ],
+      })
+    }
+    if (url.includes('/api/replays/')) return response(replay)
+    throw new Error(`Unexpected URL: ${url}`)
+  })
+
+  const user = userEvent.setup()
+  render(<App />)
+  await user.click(await screen.findByRole('button', { name: 'Run live audit' }))
+
+  const status = await screen.findByRole('status')
+  expect(status).toHaveTextContent('Live model unavailable')
+  expect(await screen.findByText('REPLAY MODE')).toBeVisible()
+  expect(within(screen.getByRole('region', { name: 'Decision trace' })).getByText('REPAIR')).toBeVisible()
+})
