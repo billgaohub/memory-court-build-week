@@ -152,6 +152,20 @@ class SessionView(StrictModel):
     updated_at: float
 
 
+class SessionCreateRequest(StrictModel):
+    case_id: str = Field(min_length=1, pattern=r"^[a-z0-9_]+$")
+
+
+class ReplayResponse(StrictModel):
+    case_id: str
+    mode: Literal["replay"]
+    label: Literal["REPLAY MODE"]
+    model: str
+    initial_state: dict[str, int]
+    final_state: dict[str, int | None]
+    events: list[AuditEvent]
+
+
 class HealthResponse(StrictModel):
     status: Literal["ok"] = "ok"
     model: str

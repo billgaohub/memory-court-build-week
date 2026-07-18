@@ -8,6 +8,7 @@ from memory_court.model_client import (
     FakeModelClient,
     ModelContext,
     ModelOutputError,
+    ModelUnavailableError,
     OpenAIModelClient,
 )
 from memory_court.models import InspectAction
@@ -105,7 +106,7 @@ async def test_openai_client_exposes_stable_error_for_provider_failure() -> None
         retry_delay=0,
     )
 
-    with pytest.raises(ModelOutputError, match="model provider request failed"):
+    with pytest.raises(ModelUnavailableError, match="model provider request failed"):
         await client.next_action(context())
 
     assert len(responses.calls) == 1

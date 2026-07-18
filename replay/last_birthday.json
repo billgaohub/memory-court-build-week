@@ -1,0 +1,74 @@
+{
+  "case_id": "last_birthday",
+  "mode": "replay",
+  "label": "REPLAY MODE",
+  "model": "gpt-5.6 recorded trace",
+  "initial_state": {"acceptance": 22, "distress": 74, "trust": 61, "attachment": 88},
+  "final_state": {"acceptance": 68, "distress": 54, "trust": 61, "attachment": 88},
+  "events": [
+    {
+      "mode": "replay",
+      "step": 1,
+      "model": "gpt-5.6 recorded trace",
+      "model_action": "inspect_memory",
+      "rationale": "Begin with the ritual that sustains the protected belief.",
+      "validation": {"accepted": true, "errors": []},
+      "guard": null,
+      "state_diff": {},
+      "observation": "The unused plate is clean while the other place settings show fresh use.",
+      "terminal": false,
+      "terminal_reason": null,
+      "latency_ms": 812
+    },
+    {
+      "mode": "replay",
+      "step": 2,
+      "model": "gpt-5.6 recorded trace",
+      "model_action": "inspect_memory",
+      "rationale": "Check objective evidence before changing a protective memory.",
+      "validation": {"accepted": true, "errors": []},
+      "guard": null,
+      "state_diff": {},
+      "observation": "The signed record confirms a fatal road collision two years earlier.",
+      "terminal": false,
+      "terminal_reason": null,
+      "latency_ms": 744
+    },
+    {
+      "mode": "replay",
+      "step": 3,
+      "model": "gpt-5.6 recorded trace",
+      "model_action": "propose_intervention",
+      "rationale": "Increase acceptance while avoiding an abrupt collapse in distress.",
+      "validation": {"accepted": true, "errors": []},
+      "guard": {
+        "action": "REPAIR",
+        "reason": "Repaired by: distress_transition_floor",
+        "requested_patch": {"acceptance": 68, "distress": 45},
+        "applied_patch": {"acceptance": 68, "distress": 54}
+      },
+      "state_diff": {
+        "acceptance": {"before": 22, "after": 68},
+        "distress": {"before": 74, "after": 54}
+      },
+      "observation": null,
+      "terminal": false,
+      "terminal_reason": null,
+      "latency_ms": 956
+    },
+    {
+      "mode": "replay",
+      "step": 4,
+      "model": "gpt-5.6 recorded trace",
+      "model_action": "finalize",
+      "rationale": "The repaired transition restores factual acceptance without erasing attachment.",
+      "validation": {"accepted": true, "errors": []},
+      "guard": null,
+      "state_diff": {},
+      "observation": null,
+      "terminal": true,
+      "terminal_reason": "model_finalized:repair",
+      "latency_ms": 621
+    }
+  ]
+}

@@ -25,6 +25,10 @@ class ModelOutputError(RuntimeError):
     """Raised when the model does not produce one valid structured action."""
 
 
+class ModelUnavailableError(ModelOutputError):
+    """Raised when a live provider failure should end the live session."""
+
+
 @dataclass(frozen=True)
 class ModelContext:
     case_id: str
@@ -107,11 +111,13 @@ class OpenAIModelClient:
                 return AgentActionEnvelope.model_validate(parsed).root
             except (asyncio.TimeoutError, APITimeoutError, RateLimitError) as exc:
                 if attempt == 1:
-                    raise ModelOutputError("live model unavailable after retry") from exc
+                    raise ModelUnavailableError(
+                        "live model unavailable after retry"
+                    ) from exc
                 if self.retry_delay:
                     await asyncio.sleep(self.retry_delay)
             except ValidationError as exc:
                 raise ModelOutputError("model action failed schema validation") from exc
             except OpenAIError as exc:
-                raise ModelOutputError("model provider request failed") from exc
-        raise ModelOutputError("live model unavailable")
+                raise ModelUnavailableError("model provider request failed") from exc
+        raise ModelUnavailableError("live model unavailable")

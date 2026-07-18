@@ -4,7 +4,12 @@ import time
 from secrets import token_urlsafe
 
 from .guard_adapter import GuardAdapter, PatchValidationError
-from .model_client import ModelClient, ModelContext, ModelOutputError
+from .model_client import (
+    ModelClient,
+    ModelContext,
+    ModelOutputError,
+    ModelUnavailableError,
+)
 from .models import (
     AuditEvent,
     CaseDefinition,
@@ -60,6 +65,8 @@ class AgentSession:
         self.model_calls += 1
         try:
             action = await self.model_client.next_action(self._context())
+        except ModelUnavailableError:
+            return self._system_stop("live_model_unavailable")
         except ModelOutputError as exc:
             return self._invalid(str(exc), self._latency(started))
 

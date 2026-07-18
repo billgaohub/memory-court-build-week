@@ -3,7 +3,11 @@ from pathlib import Path
 import pytest
 
 from memory_court.cases import CaseRepository
-from memory_court.model_client import FakeModelClient, ModelOutputError
+from memory_court.model_client import (
+    FakeModelClient,
+    ModelOutputError,
+    ModelUnavailableError,
+)
 from memory_court.models import (
     FinalizeAction,
     InspectAction,
@@ -79,6 +83,19 @@ async def test_session_stops_after_two_invalid_model_outputs(case) -> None:
     assert events[-1].terminal is True
     assert events[-1].terminal_reason == "invalid_action_limit"
     assert client.calls == 2
+
+
+@pytest.mark.asyncio
+async def test_provider_failure_stops_live_session_for_replay(case) -> None:
+    client = FakeModelClient([ModelUnavailableError("provider unavailable")])
+    session = AgentSession(case, client, session_id="provider-failure")
+
+    events = await session.run()
+
+    assert len(events) == 1
+    assert events[0].model_action == "system_stop"
+    assert events[0].terminal_reason == "live_model_unavailable"
+    assert events[0].guard is None
 
 
 @pytest.mark.asyncio
