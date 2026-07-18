@@ -1,5 +1,7 @@
 # Memory Court
 
+[![Verify submission](https://github.com/billgaohub/memory-court-build-week/actions/workflows/verify.yml/badge.svg)](https://github.com/billgaohub/memory-court-build-week/actions/workflows/verify.yml)
+
 Memory Court is an auditable autonomous-agent demo built for OpenAI Build Week. GPT-5.6 investigates a memory case, chooses one structured action per turn, and proposes bounded cognitive-state interventions. `sonuv-guard` independently adjudicates every intervention as **COMMIT**, **REPAIR**, **REJECT**, or **FORGET** before any state is applied.
 
 The interface makes the boundary explicit: GPT-5.6 supplies the investigation and proposal; Guard controls structured state execution. Guard does not review or certify the model's natural-language reasoning.

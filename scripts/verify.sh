@@ -2,7 +2,7 @@
 set -uo pipefail
 
 APP_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-WORKTREE_ROOT="$(cd "$APP_ROOT/.." && pwd)"
+REPO_ROOT="$(git -C "$APP_ROOT" rev-parse --show-toplevel 2>/dev/null || printf '%s' "$APP_ROOT")"
 failures=0
 
 pass() { printf 'PASS  %s\n' "$1"; }
@@ -39,8 +39,10 @@ else
 fi
 
 python_bin="python3"
-if [[ -x "$WORKTREE_ROOT/.venv/bin/python" ]]; then
-  python_bin="$WORKTREE_ROOT/.venv/bin/python"
+if [[ -x "$APP_ROOT/.venv/bin/python" ]]; then
+  python_bin="$APP_ROOT/.venv/bin/python"
+elif [[ -x "$REPO_ROOT/.venv/bin/python" ]]; then
+  python_bin="$REPO_ROOT/.venv/bin/python"
 fi
 if (cd "$APP_ROOT/backend" && "$python_bin" -m pytest tests -q); then
   pass "backend contract and vendored Guard tests"
@@ -76,8 +78,7 @@ else
   pass "upstream suite optional outside source workspace; vendored hashes enforced"
 fi
 
-if (cd "$WORKTREE_ROOT" && git diff --check -- . \
-  ':(exclude)hackathon/backend/memory_court/vendor/sonuv_guard/**'); then
+if (cd "$REPO_ROOT" && git diff --check); then
   pass "tracked patch whitespace"
 else
   fail "tracked patch whitespace"
