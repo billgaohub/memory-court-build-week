@@ -4,6 +4,14 @@ Memory Court is an auditable autonomous-agent demo built for OpenAI Build Week. 
 
 The interface makes the boundary explicit: GPT-5.6 supplies the investigation and proposal; Guard controls structured state execution. Guard does not review or certify the model's natural-language reasoning.
 
+## Public build
+
+- Application: <https://memory-court-build-week.vercel.app>
+- API health: <https://memory-court-api-production.up.railway.app/api/health>
+- Source: <https://github.com/billgaohub/memory-court-build-week>
+
+The public build currently reports its live-key readiness through `/api/health`. If `live_available` is false, the labeled replay remains fully testable but is not live-model evidence.
+
 ## Judge experience
 
 1. Open the application and select **The Silent Lifeboat**, the competition-period case.
@@ -32,7 +40,7 @@ The live loop is deliberately bounded to 8 model calls, 8 events, 3 intervention
 Requirements: Python 3.11+, Node.js 22+, and an optional OpenAI API key for live mode.
 
 ```bash
-git clone https://github.com/bill/memory-court-build-week.git
+git clone https://github.com/billgaohub/memory-court-build-week.git
 cd memory-court-build-week
 
 python3 -m venv .venv

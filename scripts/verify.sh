@@ -14,6 +14,7 @@ required_files=(
   railway.json frontend/vercel.json
   docs/specs/2026-07-18-memory-court-design.md
   docs/plans/2026-07-18-memory-court-implementation.md
+  docs/verification/FINAL_REPORT.md
 )
 
 missing=()
@@ -30,7 +31,8 @@ placeholder_pattern='TODO|TBD|PLACEHOLDER|YOUR_[A-Z_]+|<repo>|<video>|<url>|<fil
 if ((${#missing[@]} == 0)) && ! rg -n -i "$placeholder_pattern" \
   "$APP_ROOT/README.md" "$APP_ROOT/PREEXISTING_VS_NEW.md" \
   "$APP_ROOT/SUBMISSION.md" "$APP_ROOT/DEMO_SCRIPT.md" \
-  "$APP_ROOT/CODEX_EVIDENCE.md"; then
+  "$APP_ROOT/CODEX_EVIDENCE.md" \
+  "$APP_ROOT/docs/verification/FINAL_REPORT.md"; then
   pass "submission prose has no placeholder markers"
 else
   fail "submission prose contains placeholders or cannot be scanned"

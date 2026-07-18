@@ -19,6 +19,9 @@ This single task contains the approved architecture and visual decisions plus th
 | `8c5efa4` | Bounded GPT-5.6 structured-action loop |
 | `7b1a98f` | FastAPI, rate limiting, recovery, replay, and Docker |
 | `3733fa4` | React audit console, tests, responsive implementation, and build |
+| `6e02cf3` | Submission-ready English materials and verification gate |
+| `485fd8d` | Standalone public-repository ignore boundary |
+| `358576c` | Railway Docker and health-check configuration |
 
 ## Verification performed by Codex
 
@@ -27,7 +30,18 @@ This single task contains the approved architecture and visual decisions plus th
 - Frontend unit interaction tests, TypeScript check, and production build.
 - Playwright desktop and 390px mobile rendering.
 - Browser interaction proof for case switching and replay with zero console errors.
-- Source hash verification, unfilled-marker scan, public deployment smoke, and live-model evidence are recorded by the final completion report.
+- Public GitHub visibility/license check, Railway Docker deployment, Vercel production build, public replay/CORS smoke, and zero-console-error production rendering.
+- Source hash verification, unfilled-marker scan, and live-model evidence are recorded by the completion report.
+
+## Public deployment evidence
+
+- Source: <https://github.com/billgaohub/memory-court-build-week>
+- Frontend: <https://memory-court-build-week.vercel.app>
+- API: <https://memory-court-api-production.up.railway.app>
+- Railway project: `136c52ec-3f62-4cc3-8b97-0354b205da28`
+- Railway service: `cf859640-8eae-4c81-8ab8-1cb4dda96575`
+- Successful Railway CORS deployment: `39735c74-5b69-4add-85c1-3dd6cbdaf33a`
+- Ready Vercel production deployment: `dpl_7pLdyf7PYDYxP8zXFkAmrjCGuCnd`
 
 ## Claim boundary
 

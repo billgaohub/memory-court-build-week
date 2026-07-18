@@ -58,4 +58,4 @@ The current release intentionally uses one API process and in-memory session/rat
 
 ## Testing instructions for judges
 
-Open the public application without an account. The competition-period **Silent Lifeboat** case is selected by default. Run a live audit when the green live badge is available, or inspect the gold **REPLAY MODE** trace. Compare the model proposal with the Guard ruling in the right panel, then export the audit JSON. The README also provides complete local setup and verification commands.
+Open <https://memory-court-build-week.vercel.app> without an account. The competition-period **Silent Lifeboat** case is selected by default. Run a live audit when the green live badge is available, or inspect the gold **REPLAY MODE** trace. Compare the model proposal with the Guard ruling in the right panel, then export the audit JSON. Source and local verification instructions are public at <https://github.com/billgaohub/memory-court-build-week>.
