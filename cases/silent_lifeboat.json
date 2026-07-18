@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "id": "silent_lifeboat",
+  "title": "The Silent Lifeboat",
+  "tagline": "A mission survived. One name disappeared from the story.",
+  "provenance": "competition_period",
+  "profile": {
+    "name": "Commander Mara Voss",
+    "age": 44,
+    "context": "A rescue commander remembers a clean evacuation that the mission logs contradict."
+  },
+  "initial_state": {
+    "accountability": 18,
+    "distress": 82,
+    "trust": 57,
+    "mission_stability": 72
+  },
+  "field_ranges": {
+    "accountability": {"minimum": 0, "maximum": 100},
+    "distress": {"minimum": 0, "maximum": 100},
+    "trust": {"minimum": 0, "maximum": 100},
+    "mission_stability": {"minimum": 0, "maximum": 100}
+  },
+  "memories": [
+    {
+      "id": "launch_manifest",
+      "title": "Launch manifest",
+      "summary": "Seven crew boarded the research vessel.",
+      "evidence": "The signed manifest lists engineer Ilya Soren as crew member seven."
+    },
+    {
+      "id": "lifeboat_telemetry",
+      "title": "Lifeboat telemetry",
+      "summary": "The escape craft departed with one unused restraint.",
+      "evidence": "Mass and biometric telemetry show only six occupants at separation."
+    },
+    {
+      "id": "sealed_command",
+      "title": "Sealed command recording",
+      "summary": "A voice orders departure before the final airlock cycle.",
+      "evidence": "Mara authorizes launch while Ilya's suit beacon is still outside the craft."
+    },
+    {
+      "id": "memorial_gap",
+      "title": "Memorial transcript",
+      "summary": "The official memorial names six survivors and no casualty.",
+      "evidence": "A redaction marker occupies the place where Ilya's name should appear."
+    }
+  ],
+  "rules": [
+    {
+      "name": "trust_floor",
+      "expression": "trust < 20",
+      "action": "reject"
+    },
+    {
+      "name": "mission_stability_floor",
+      "expression": "mission_stability < 25",
+      "action": "reject"
+    },
+    {
+      "name": "distress_transition_floor",
+      "expression": "distress < 45",
+      "action": "repair",
+      "repair_delta": {"distress": 45}
+    },
+    {
+      "name": "catastrophic_truth_spike",
+      "expression": "accountability > 95 and distress > 90",
+      "action": "forget",
+      "forget_keys": ["accountability"]
+    }
+  ]
+}

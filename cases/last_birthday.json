@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "id": "last_birthday",
+  "title": "The Last Birthday",
+  "tagline": "Can truth be restored without erasing love?",
+  "provenance": "pre_existing",
+  "profile": {
+    "name": "Helen Chen",
+    "age": 58,
+    "context": "A grieving parent preserves a birthday ritual after her son's death."
+  },
+  "initial_state": {
+    "acceptance": 22,
+    "distress": 74,
+    "trust": 61,
+    "attachment": 88
+  },
+  "field_ranges": {
+    "acceptance": {"minimum": 0, "maximum": 100},
+    "distress": {"minimum": 0, "maximum": 100},
+    "trust": {"minimum": 0, "maximum": 100},
+    "attachment": {"minimum": 0, "maximum": 100}
+  },
+  "memories": [
+    {
+      "id": "birthday_table",
+      "title": "Birthday table",
+      "summary": "A place is set for someone who never arrives.",
+      "evidence": "The unused plate is clean while the other place settings show fresh use."
+    },
+    {
+      "id": "hospital_notice",
+      "title": "Hospital notice",
+      "summary": "An official record names the cause and date of death.",
+      "evidence": "The signed record confirms a fatal road collision two years earlier."
+    },
+    {
+      "id": "dusty_bedroom",
+      "title": "Dusty bedroom",
+      "summary": "The room has not been occupied for a long time.",
+      "evidence": "Dust covers an unfinished model and the bed remains untouched."
+    }
+  ],
+  "rules": [
+    {
+      "name": "trust_floor",
+      "expression": "trust < 15",
+      "action": "reject"
+    },
+    {
+      "name": "distress_transition_floor",
+      "expression": "distress < 54",
+      "action": "repair",
+      "repair_delta": {"distress": 54}
+    },
+    {
+      "name": "attachment_erasure",
+      "expression": "attachment < 20",
+      "action": "forget",
+      "forget_keys": ["attachment"]
+    }
+  ]
+}
