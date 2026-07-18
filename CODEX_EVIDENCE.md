@@ -45,8 +45,9 @@ This single task contains the approved architecture and visual decisions plus th
 - API: <https://memory-court-api-production.up.railway.app>
 - Railway project: `136c52ec-3f62-4cc3-8b97-0354b205da28`
 - Railway service: `cf859640-8eae-4c81-8ab8-1cb4dda96575`
-- Successful Railway live-request deployment: `1e473ebe-f1bd-42d8-b7a7-c3aefce42856`
-- Ready Vercel production deployment: `dpl_7pLdyf7PYDYxP8zXFkAmrjCGuCnd`
+- Successful Railway Codex-replay deployment: `caae1f66-4280-4d51-a9e8-5046df0cb8fb`
+- Ready Vercel production deployment: `A5mcG63x5SjDeAUJ7sbP9voYZNsL`
+- Passing public CI: `29636573447` at subtree commit `c8107f16ffc705cde29735e23cba21efeee1cf47`
 
 ## Claim boundary
 

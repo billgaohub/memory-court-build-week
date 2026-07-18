@@ -1,10 +1,10 @@
 # Memory Court submission verification report
 
-- Audit time: 2026-07-18 15:27 Asia/Shanghai
-- Status: **PUBLIC CODEX GPT-5.6 REPLAY READY; OPENAI API LIVE BLOCKED BY QUOTA**
+- Audit time: 2026-07-18 15:58 Asia/Shanghai
+- Status: **DISCLOSED CODEX GPT-5.6 SUBMISSION ROUTE READY; OPENAI API LIVE BLOCKED BY QUOTA**
 - Primary Codex task: `019f725e-6f43-78c2-8587-4ad6a3725d9f`
-- Source branch code commit: `40d8120f4020db67cb876aa89f7d7ce695c4c8f8`
-- Published subtree commit: `7fed520c7f84d89df0f4d1cd9bf4b729f5c142dc`
+- Source branch code commit: `757ce2d741dad963843625dfa28f07483f6280b0`
+- Published subtree commit: `c8107f16ffc705cde29735e23cba21efeee1cf47`
 
 Railway has a server-side `OPENAI_API_KEY`, and the production request passes the Responses parameter and strict-schema checks, but OpenAI returns `429 insufficient_quota`. The judgeable fallback is now a competition-period GPT-5.6 Sol trace generated inside Codex and reproducibly executed against sonuv-guard. It is disclosed as recorded replay evidence, not API-live proof.
 
@@ -13,7 +13,7 @@ Railway has a server-side `OPENAI_API_KEY`, and the production request passes th
 | Artifact | URL | Evidence |
 |---|---|---|
 | GitHub | <https://github.com/billgaohub/memory-court-build-week> | PUBLIC; main; MIT detected; standalone subtree only |
-| Frontend | <https://memory-court-build-week.vercel.app> | Vercel deployment `dpl_7pLdyf7PYDYxP8zXFkAmrjCGuCnd`; target production; Ready |
+| Frontend | <https://memory-court-build-week.vercel.app> | Vercel production deployment `A5mcG63x5SjDeAUJ7sbP9voYZNsL`; aliased and Ready |
 | API | <https://memory-court-api-production.up.railway.app> | Railway service `cf859640-8eae-4c81-8ab8-1cb4dda96575` |
 
 ## Local gates
@@ -40,18 +40,19 @@ Command: `bash scripts/verify.sh`
 - Public replay mode: exactly one `REPLAY MODE` badge.
 - Silent Lifeboat replay events: 6, including Guard `REPAIR` followed by `COMMIT`.
 - Live readiness is now advertised because a server-side key is configured; a provider failure still enters labeled replay.
+- Visible provenance note: GPT-5.6 Sol inside Codex, executed against sonuv-guard, not through the OpenAI API.
 - Browser console: zero warnings and zero errors.
-- Interaction: switching from Silent Lifeboat to Last Birthday and restarting replay changed the rendered trace from 5 to 4 events.
+- Interaction: direct replay load rendered 6 events; clicking live reached the quota failure and automatically switched to the same labeled replay.
 
 ## Railway container and API verification
 
-Railway used `/railway.json` with `builder=DOCKERFILE`, `dockerfilePath=backend/Dockerfile`, and `/api/health` as the health path. Latest deployment `1e473ebe-f1bd-42d8-b7a7-c3aefce42856` completed with status `SUCCESS`.
+Railway used `/railway.json` with `builder=DOCKERFILE`, `dockerfilePath=backend/Dockerfile`, and `/api/health` as the health path. Latest deployment `caae1f66-4280-4d51-a9e8-5046df0cb8fb` completed with status `SUCCESS`.
 
 | Public check | Result |
 |---|---|
 | `GET /api/health` | 200; model `gpt-5.6`; replay and live readiness available |
 | `GET /api/cases` | 200; one pre-existing and one competition-period case |
-| `GET /api/replays/silent_lifeboat` | 200; top-level and all events use replay mode |
+| `GET /api/replays/silent_lifeboat` | 200; `provenance=codex_gpt_5_6_sol`; `api_live=false`; 6 replay events; Guard actions `REPAIR`, `COMMIT` |
 | Vercel-origin CORS preflight | 200; exact production origin returned |
 | `POST /api/sessions` with server key | 201; creates `mode=live`, model `gpt-5.6` |
 | `POST /api/sessions/{id}/run` | 200; safely terminates as `live_model_unavailable`, allowing labeled replay fallback |
@@ -83,6 +84,8 @@ Required evidence after the entrant enables billing or quota for the OpenAI proj
 - One Railway replica is assumed.
 - Replay is a fixed fixture and is never live evidence.
 - The API is intentionally unauthenticated and cost-bounded for free judge access.
+- Whether recorded GPT-5.6 usage inside Codex satisfies the competition's GPT-5.6 requirement is ultimately an organizer/judging interpretation; this package makes the evidence and non-API boundary explicit.
+- Public GitHub Actions run `29636573447` passed against subtree commit `c8107f1`.
 
 ## Entrant-only actions after technical completion
 
