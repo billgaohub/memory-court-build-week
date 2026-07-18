@@ -72,7 +72,13 @@ class InspectAction(StrictAction):
 
 class InterventionAction(StrictAction):
     action: Literal["propose_intervention"]
-    patch: dict[str, int] = Field(min_length=1, max_length=4)
+    patch: dict[str, int]
+
+    @model_validator(mode="after")
+    def validate_patch_size(self) -> "InterventionAction":
+        if not 1 <= len(self.patch) <= 4:
+            raise ValueError("patch must contain 1 to 4 fields")
+        return self
 
 
 class FinalizeAction(StrictAction):

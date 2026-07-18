@@ -1,8 +1,10 @@
 import asyncio
+import json
 from types import SimpleNamespace
 
 import pytest
 from openai import OpenAIError
+from pydantic import ValidationError
 
 from memory_court.model_client import (
     FakeModelClient,
@@ -11,7 +13,7 @@ from memory_court.model_client import (
     ModelUnavailableError,
     OpenAIModelClient,
 )
-from memory_court.models import InspectAction
+from memory_court.models import AgentActionEnvelope, InspectAction, InterventionAction
 
 
 def context() -> ModelContext:
@@ -25,6 +27,21 @@ def context() -> ModelContext:
         recent_events=[],
         limits={"remaining_calls": 8, "remaining_proposals": 3},
     )
+
+
+def test_intervention_patch_limits_do_not_emit_unsupported_schema_keywords() -> None:
+    schema = json.dumps(AgentActionEnvelope.model_json_schema())
+
+    assert "minProperties" not in schema
+    assert "maxProperties" not in schema
+
+    for patch in ({}, {f"field_{index}": index for index in range(5)}):
+        with pytest.raises(ValidationError, match="patch must contain 1 to 4 fields"):
+            InterventionAction(
+                action="propose_intervention",
+                patch=patch,
+                rationale="Exercise the bounded patch contract.",
+            )
 
 
 @pytest.mark.asyncio
