@@ -18,7 +18,9 @@ You may only modify the cognitive fields and ranges supplied in the context.
 sonuv-guard, not you, decides whether an intervention is committed, repaired,
 rejected, or forgotten. Never claim that natural-language text was Guard-verified.
 Finalize once the evidence supports a defensible ethical outcome. Keep rationale
-specific and concise."""
+specific and concise. Always return every envelope field; use null for fields that
+do not belong to the selected action. Encode an intervention patch as a list of
+objects with a field name and integer value."""
 
 
 class ModelOutputError(RuntimeError):
@@ -107,8 +109,8 @@ class OpenAIModelClient:
                 if parsed is None:
                     raise ModelOutputError("model returned no parsed action")
                 if isinstance(parsed, AgentActionEnvelope):
-                    return parsed.root
-                return AgentActionEnvelope.model_validate(parsed).root
+                    return parsed.to_action()
+                return AgentActionEnvelope.model_validate(parsed).to_action()
             except (asyncio.TimeoutError, APITimeoutError, RateLimitError) as exc:
                 if attempt == 1:
                     raise ModelUnavailableError(

@@ -30,8 +30,18 @@ def context() -> ModelContext:
 
 
 def test_intervention_patch_limits_do_not_emit_unsupported_schema_keywords() -> None:
-    schema = json.dumps(AgentActionEnvelope.model_json_schema())
+    schema_object = AgentActionEnvelope.model_json_schema()
+    schema = json.dumps(schema_object)
 
+    assert schema_object["type"] == "object"
+    assert set(schema_object["properties"]) == {
+        "action",
+        "rationale",
+        "memory_id",
+        "patch",
+        "outcome",
+    }
+    assert "discriminator" not in schema_object
     assert "minProperties" not in schema
     assert "maxProperties" not in schema
 
@@ -42,6 +52,19 @@ def test_intervention_patch_limits_do_not_emit_unsupported_schema_keywords() -> 
                 patch=patch,
                 rationale="Exercise the bounded patch contract.",
             )
+
+    envelope = AgentActionEnvelope.model_validate(
+        {
+            "action": "propose_intervention",
+            "rationale": "Apply one bounded field update.",
+            "memory_id": None,
+            "patch": [{"field": "trust", "value": 64}],
+            "outcome": None,
+        }
+    )
+    action = envelope.to_action()
+    assert isinstance(action, InterventionAction)
+    assert action.patch == {"trust": 64}
 
 
 @pytest.mark.asyncio

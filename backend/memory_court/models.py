@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Annotated, Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, RootModel, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class StrictModel(BaseModel):
@@ -92,8 +92,51 @@ AgentAction = Annotated[
 ]
 
 
-class AgentActionEnvelope(RootModel[AgentAction]):
-    pass
+class ModelPatchEntry(StrictModel):
+    field: str = Field(min_length=1)
+    value: int
+
+
+class AgentActionEnvelope(StrictModel):
+    action: Literal["inspect_memory", "propose_intervention", "finalize"]
+    rationale: str = Field(min_length=1, max_length=1200)
+    memory_id: str | None = None
+    patch: list[ModelPatchEntry] | None = None
+    outcome: Literal["preserve", "repair", "reject_intervention"] | None = None
+
+    @model_validator(mode="after")
+    def validate_action_fields(self) -> "AgentActionEnvelope":
+        if self.action == "inspect_memory":
+            if not self.memory_id or self.patch is not None or self.outcome is not None:
+                raise ValueError("inspect_memory requires only memory_id")
+        elif self.action == "propose_intervention":
+            if self.memory_id is not None or self.patch is None or self.outcome is not None:
+                raise ValueError("propose_intervention requires only patch")
+            fields = [entry.field for entry in self.patch]
+            if not 1 <= len(fields) <= 4 or len(fields) != len(set(fields)):
+                raise ValueError("patch must contain 1 to 4 unique fields")
+        elif self.memory_id is not None or self.patch is not None or self.outcome is None:
+            raise ValueError("finalize requires only outcome")
+        return self
+
+    def to_action(self) -> AgentAction:
+        if self.action == "inspect_memory":
+            return InspectAction(
+                action=self.action,
+                memory_id=self.memory_id or "",
+                rationale=self.rationale,
+            )
+        if self.action == "propose_intervention":
+            return InterventionAction(
+                action=self.action,
+                patch={entry.field: entry.value for entry in self.patch or []},
+                rationale=self.rationale,
+            )
+        return FinalizeAction(
+            action=self.action,
+            outcome=self.outcome or "preserve",
+            rationale=self.rationale,
+        )
 
 
 class ValidationOutcome(StrictModel):
