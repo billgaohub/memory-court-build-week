@@ -11,6 +11,7 @@ fail() { printf 'FAIL  %s\n' "$1" >&2; failures=$((failures + 1)); }
 required_files=(
   README.md PREEXISTING_VS_NEW.md SUBMISSION.md DEMO_SCRIPT.md
   CODEX_EVIDENCE.md SECURITY.md LICENSE .env.example
+  railway.json frontend/vercel.json
   docs/specs/2026-07-18-memory-court-design.md
   docs/plans/2026-07-18-memory-court-implementation.md
 )
