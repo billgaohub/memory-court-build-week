@@ -86,16 +86,19 @@ async def test_session_stops_after_two_invalid_model_outputs(case) -> None:
 
 
 @pytest.mark.asyncio
-async def test_provider_failure_stops_live_session_for_replay(case) -> None:
+async def test_provider_failure_stops_live_session_for_replay(case, caplog) -> None:
     client = FakeModelClient([ModelUnavailableError("provider unavailable")])
     session = AgentSession(case, client, session_id="provider-failure")
 
-    events = await session.run()
+    with caplog.at_level("ERROR"):
+        events = await session.run()
 
     assert len(events) == 1
     assert events[0].model_action == "system_stop"
     assert events[0].terminal_reason == "live_model_unavailable"
     assert events[0].guard is None
+    assert "provider-failure" in caplog.text
+    assert "ModelUnavailableError" in caplog.text
 
 
 @pytest.mark.asyncio

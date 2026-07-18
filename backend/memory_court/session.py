@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import time
 from secrets import token_urlsafe
 
@@ -20,6 +21,9 @@ from .models import (
     StateChange,
     ValidationOutcome,
 )
+
+
+logger = logging.getLogger(__name__)
 
 
 class SessionTerminalError(RuntimeError):
@@ -66,6 +70,10 @@ class AgentSession:
         try:
             action = await self.model_client.next_action(self._context())
         except ModelUnavailableError:
+            logger.exception(
+                "Live model request failed for session %s; switching to replay-safe stop",
+                self.id,
+            )
             return self._system_stop("live_model_unavailable")
         except ModelOutputError as exc:
             return self._invalid(str(exc), self._latency(started))
