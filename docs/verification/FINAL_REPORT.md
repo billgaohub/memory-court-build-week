@@ -1,12 +1,12 @@
 # Memory Court submission verification report
 
 - Audit time: 2026-07-18 15:27 Asia/Shanghai
-- Status: **PUBLIC REPLAY READY; LIVE GPT-5.6 BLOCKED BY API QUOTA**
+- Status: **PUBLIC CODEX GPT-5.6 REPLAY READY; OPENAI API LIVE BLOCKED BY QUOTA**
 - Primary Codex task: `019f725e-6f43-78c2-8587-4ad6a3725d9f`
 - Source branch code commit: `40d8120f4020db67cb876aa89f7d7ce695c4c8f8`
 - Published subtree commit: `7fed520c7f84d89df0f4d1cd9bf4b729f5c142dc`
 
-This report deliberately remains incomplete on one required gate. Railway has a server-side `OPENAI_API_KEY`, the production request now passes the Responses parameter and strict-schema checks, but OpenAI returns `429 insufficient_quota`. No replay event is presented as live-model proof.
+Railway has a server-side `OPENAI_API_KEY`, and the production request passes the Responses parameter and strict-schema checks, but OpenAI returns `429 insufficient_quota`. The judgeable fallback is now a competition-period GPT-5.6 Sol trace generated inside Codex and reproducibly executed against sonuv-guard. It is disclosed as recorded replay evidence, not API-live proof.
 
 ## Public artifacts
 
@@ -24,7 +24,7 @@ Command: `bash scripts/verify.sh`
 |---|---|
 | Required submission files | PASS |
 | Unfilled-marker scan | PASS |
-| Backend contracts and Guard adapter | PASS — 35 tests |
+| Backend contracts and Guard adapter | PASS — 36 tests |
 | Frontend interaction tests | PASS — 4 tests |
 | TypeScript | PASS |
 | Vite production build | PASS |
@@ -38,7 +38,7 @@ Command: `bash scripts/verify.sh`
 - Page title: `Memory Court — GPT-5.6 Audit`.
 - Default case: `silent_lifeboat`.
 - Public replay mode: exactly one `REPLAY MODE` badge.
-- Replay events: 5.
+- Silent Lifeboat replay events: 6, including Guard `REPAIR` followed by `COMMIT`.
 - Live readiness is now advertised because a server-side key is configured; a provider failure still enters labeled replay.
 - Browser console: zero warnings and zero errors.
 - Interaction: switching from Silent Lifeboat to Last Birthday and restarting replay changed the rendered trace from 5 to 4 events.
@@ -67,6 +67,15 @@ Required evidence after the entrant enables billing or quota for the OpenAI proj
 2. At least one returned event has `mode=live`, `model=gpt-5.6`, `model_action=propose_intervention`, and a non-null Guard outcome.
 3. The response and logs contain no credential material.
 4. Production frontend displays `LIVE · GPT-5.6` and the same executed trace.
+
+## Recorded GPT-5.6 Sol / Codex evidence
+
+- Source: `replay/silent_lifeboat.codex-actions.json`.
+- Generator: GPT-5.6 Sol inside Codex, primary task `019f725e-6f43-78c2-8587-4ad6a3725d9f`.
+- Disclosure: `api_live=false`; public model label is `gpt-5.6-sol via Codex (recorded)`.
+- Execution: the six envelopes run through `AgentSession` and the production sonuv-guard adapter.
+- Deterministic result: three inspections, a `REPAIR`, a follow-up `COMMIT`, and `finalize`; final state accountability 82, distress 58, trust 65, mission stability 70.
+- Verification: `test_codex_replay.py` requires the regenerated events and final state to match the published fixture exactly.
 
 ## Known demo-grade limits
 

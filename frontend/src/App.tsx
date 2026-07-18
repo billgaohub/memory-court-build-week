@@ -27,6 +27,10 @@ function replayAsSession(replay: ReplayResponse): SessionView {
     terminal: true,
     created_at: now,
     updated_at: now,
+    replay_provenance: replay.provenance,
+    replay_disclosure: replay.disclosure,
+    replay_source_task_id: replay.source_task_id,
+    replay_generated_at: replay.generated_at,
   }
 }
 
@@ -121,7 +125,7 @@ export default function App({ initialSession, initialCases }: AppProps) {
     const payload = {
       exported_at: new Date().toISOString(),
       disclosure: session.mode === 'replay'
-        ? 'REPLAY MODE — fixed fixture; no live model call.'
+        ? `REPLAY MODE — ${session.replay_disclosure ?? 'fixed fixture; no live model call.'}`
         : 'LIVE — GPT-5.6 actions with structured sonuv-guard adjudication.',
       case: selectedCase,
       session,
@@ -153,7 +157,7 @@ export default function App({ initialSession, initialCases }: AppProps) {
           onRun={runLive}
           onReplay={() => { void loadReplay() }}
         />
-        <DecisionTrace events={events} />
+        <DecisionTrace events={events} replayDisclosure={session?.replay_disclosure} />
         <GuardPanel events={events} onExport={exportAudit} exportDisabled={!session} />
       </main>
 

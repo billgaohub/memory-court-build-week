@@ -69,6 +69,11 @@ def test_replay_is_always_labeled() -> None:
 
     assert body["mode"] == "replay"
     assert body["label"] == "REPLAY MODE"
+    assert body["provenance"] == "codex_gpt_5_6_sol"
+    assert body["source_task_id"] == "019f725e-6f43-78c2-8587-4ad6a3725d9f"
+    assert body["model"] == "gpt-5.6-sol via Codex (recorded)"
+    assert body["api_live"] is False
+    assert "not through the OpenAI API" in body["disclosure"]
     assert all(event["mode"] == "replay" for event in body["events"])
 
 

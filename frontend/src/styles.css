@@ -82,6 +82,12 @@ button, select, a { -webkit-tap-highlight-color: transparent; }
 .panel-heading h2 { margin: 0; font: 600 13px var(--mono); letter-spacing: .1em; text-transform: uppercase; }
 .panel-index { color: var(--gold); font: 400 10px var(--mono); }
 .event-count { margin-left: auto; color: var(--muted); font: 400 9px var(--mono); letter-spacing: .1em; }
+.replay-provenance {
+  margin: 18px 24px 0; padding: 13px 14px; border: 1px solid #5b4828;
+  color: #b7aa91; background: rgba(230,187,100,.055); font: 400 9px/1.6 var(--mono);
+}
+.replay-provenance strong { display: block; margin-bottom: 4px; color: var(--gold); letter-spacing: .11em; }
+.replay-provenance span { display: block; }
 
 .field-label, .subheading { display: block; margin: 0 0 9px; color: var(--muted); font: 500 9px var(--mono); letter-spacing: .13em; text-transform: uppercase; }
 select {

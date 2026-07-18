@@ -209,6 +209,11 @@ class ReplayResponse(StrictModel):
     case_id: str
     mode: Literal["replay"]
     label: Literal["REPLAY MODE"]
+    provenance: Literal["codex_gpt_5_6_sol", "deterministic_fixture"]
+    source_task_id: str | None
+    generated_at: str
+    api_live: Literal[False]
+    disclosure: str
     model: str
     initial_state: dict[str, int]
     final_state: dict[str, int | None]

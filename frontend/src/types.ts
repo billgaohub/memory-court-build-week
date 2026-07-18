@@ -55,12 +55,21 @@ export interface SessionView {
   terminal: boolean
   created_at: number
   updated_at: number
+  replay_provenance?: 'codex_gpt_5_6_sol' | 'deterministic_fixture'
+  replay_disclosure?: string
+  replay_source_task_id?: string | null
+  replay_generated_at?: string
 }
 
 export interface ReplayResponse {
   case_id: string
   mode: 'replay'
   label: 'REPLAY MODE'
+  provenance: 'codex_gpt_5_6_sol' | 'deterministic_fixture'
+  source_task_id: string | null
+  generated_at: string
+  api_live: false
+  disclosure: string
   model: string
   initial_state: Record<string, number>
   final_state: Record<string, number | null>

@@ -8,7 +8,12 @@ const actionLabel: Record<AuditEvent['model_action'], string> = {
   system_stop: 'SYSTEM STOP',
 }
 
-export default function DecisionTrace({ events }: { events: AuditEvent[] }) {
+interface DecisionTraceProps {
+  events: AuditEvent[]
+  replayDisclosure?: string
+}
+
+export default function DecisionTrace({ events, replayDisclosure }: DecisionTraceProps) {
   return (
     <section className="panel trace-panel" aria-label="Decision trace">
       <div className="panel-heading panel-heading--sticky">
@@ -16,6 +21,13 @@ export default function DecisionTrace({ events }: { events: AuditEvent[] }) {
         <h2>Decision trace</h2>
         <span className="event-count">{events.length.toString().padStart(2, '0')} EVENTS</span>
       </div>
+
+      {replayDisclosure ? (
+        <div className="replay-provenance" role="note" aria-label="Replay provenance">
+          <strong>RECORDED EVIDENCE</strong>
+          <span>{replayDisclosure}</span>
+        </div>
+      ) : null}
 
       {events.length === 0 ? (
         <div className="trace-empty">

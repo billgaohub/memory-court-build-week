@@ -15,6 +15,7 @@ required_files=(
   docs/specs/2026-07-18-memory-court-design.md
   docs/plans/2026-07-18-memory-court-implementation.md
   docs/verification/FINAL_REPORT.md
+  replay/silent_lifeboat.codex-actions.json
 )
 
 missing=()

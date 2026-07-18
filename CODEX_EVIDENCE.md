@@ -36,6 +36,7 @@ This single task contains the approved architecture and visual decisions plus th
 - Browser interaction proof for case switching and replay with zero console errors.
 - Public GitHub visibility/license check, Railway Docker deployment, Vercel production build, public replay/CORS smoke, and zero-console-error production rendering.
 - Source hash verification, unfilled-marker scan, and live-model evidence are recorded by the completion report.
+- GPT-5.6 Sol inside Codex generated the six Silent Lifeboat action envelopes in this primary task. `test_codex_replay.py` re-executes them through the production session and Guard adapter and requires an exact replay match.
 
 ## Public deployment evidence
 
@@ -49,4 +50,4 @@ This single task contains the approved architecture and visual decisions plus th
 
 ## Claim boundary
 
-Codex generated the competition-period extension. It did not create the pre-existing sonuv-guard runtime or Last Birthday case. Their provenance is disclosed separately.
+Codex generated the competition-period extension and hosted the recorded GPT-5.6 Sol investigation. That trace is labeled `mode=replay` and `api_live=false`; the deployed OpenAI API path remains quota-blocked. Codex did not create the pre-existing sonuv-guard runtime or Last Birthday case. Their provenance is disclosed separately.
