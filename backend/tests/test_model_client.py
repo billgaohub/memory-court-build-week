@@ -67,6 +67,8 @@ async def test_openai_client_uses_gpt56_responses_parse() -> None:
     assert action.action == "inspect_memory"
     assert responses.calls[0]["model"] == "gpt-5.6"
     assert responses.calls[0]["max_output_tokens"] == 600
+    assert responses.calls[0]["text"] == {"verbosity": "low"}
+    assert "verbosity" not in responses.calls[0]
     assert responses.calls[0]["store"] is False
 
 

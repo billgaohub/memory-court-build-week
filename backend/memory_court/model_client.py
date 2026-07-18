@@ -98,7 +98,7 @@ class OpenAIModelClient:
                         text_format=AgentActionEnvelope,
                         max_output_tokens=self.max_output_tokens,
                         reasoning={"effort": "low"},
-                        verbosity="low",
+                        text={"verbosity": "low"},
                         store=False,
                     ),
                     timeout=self.timeout_seconds,
